@@ -8,9 +8,6 @@ GEM
       gem_plugin (>= 0.2.3)
     rack (1.4.1)
 
-PLATFORMS
-  x86-mingw32
-
 DEPENDENCIES
   mongrel
   rack
