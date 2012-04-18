@@ -1,0 +1,250 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <style type="text/css">
+        body {
+            background-color: #000;
+            text-align: center;
+        }
+        table {
+            margin: 0 auto;
+        }
+        table tbody td {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #000;
+            font-size: 16px;
+            text-align: center;
+        }
+        table tbody td.current {
+            background-color: #0192DD;
+        }
+        table tbody td.visited {
+            background-color: #dddddd;
+        }
+        input {
+            text-align: center;
+            padding: 5px 2px;
+            font-size: 20px;
+            width: 200px;
+            border-radius: 8px; 
+            border: none;
+            color: #303030;
+        }
+        input:focus,
+        input:hover {
+            outline: none;
+            background-color: #dddddd;
+        }
+        h1 {
+            font-size: 70px;
+            font-weight: bold;
+            font-family: "Arial";
+            margin: 12px 0;
+            text-shadow: 0px 0px 8px #ffffff;
+        }
+        button {
+            width: 200px;
+            padding: 2px;
+            height: 50px;
+            font-size: 20px;
+            background-color: #00A6FC;
+            border-radius: 8px;
+            margin-top: 10px; 
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+        }
+        button:hover,
+        button:focus {
+            outline: none;
+           background-color: #0192DD; 
+        }
+    </style>
+</head>
+
+<body>
+    <a href="http://github.com/mrbongiolo/inca-pyramid"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/4c7dc970b89fd04b81c8e221ba88ff99a06c6b61/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67" alt="Fork me on GitHub"></a>
+    <header>
+        <hgroup>
+            <h1>Inca Pyramid</h1>
+        </hgroup>
+        <div>
+            <input id="pyramid-size" type="text" placeholder="Size">
+            <br />
+            <button id="button-inca-pyramid" onclick="create_pyramid_structure();">Create Inca Pyramid</button>
+            <br />
+        </div>
+    </header>
+    <br />
+    <article>
+        <table id="table-inca-pyramid">
+            <tbody>
+            </tbody>
+        </table>
+    </article>
+    <br />
+    <footer>
+    </footer>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        var inca_array = [];
+
+        var initial_pos = 0
+        var max_pos = inca_array.length - 1; //array length - 1
+
+        var max_steps = inca_array.length * inca_array.length; //array length ^ 2
+        var steps = 1
+
+        var finished = false;
+        var direction = "right";
+
+        var current = [0,0]
+        var next = [0,1]
+
+        var length = 2;
+
+        function clear_values() {
+          initial_pos = 0;
+          max_pos = inca_array.length - 1;
+          max_steps = inca_array.length * inca_array.length; //array length ^ 2
+          steps = 1
+          finished = false;
+          direction = "right";
+          current = [0,0]
+          next = [0,1]
+        }
+
+        function where_goes_next() {
+          if (finished === false) {
+            switch(direction) {
+            case 'right':
+              if (next[1] === max_pos) {
+                direction = "bottom";
+                next[0] += 1;
+              } else {
+                next[1] += 1;
+              }
+              break;
+           
+            case 'bottom':
+              if (next[0] === max_pos) {
+                if (steps === max_steps - 2) { finished = true; }
+                direction = "left";
+                next[1] -= 1;
+              } else {
+                next[0] += 1;
+              }
+              break;
+            
+            case 'left':
+              if (next[1] === initial_pos) {
+                direction = "top";
+                next[0] -= 1;
+              } else {
+                next[1] -= 1;
+              }
+              break;
+            
+            case 'top':
+              if (next[0] === initial_pos + 1) {
+                direction = "right";
+                next[1] += 1;
+                initial_pos += 1;
+                max_pos -= 1;
+                if (initial_pos === max_pos) {
+                  finished = true;
+                }
+              } else {
+                next[0] -= 1;
+              }
+              break;
+
+            default: //do nothing
+            }
+            steps += 1;
+          }
+        }
+
+        function check_if_is_inca_pyramid() {
+          //alert("current: [" + current[0] + "," + current[1] + "]\r\n" + 
+          //  "next: [" + next[0] + "," + next[1] + "]\r\n" +
+           // "\r\nvalor atual: " + inca_array[current[0]][current[1]] +
+          // "\r\nvalor proxi: " + inca_array[next[0]][next[1]] + 
+          // "\r\npassos: " + steps +
+          // "\r\nmax passos: " + max_steps +
+           // "\r\ndirecao: " + direction +
+          //  "\r\nacabou?: " + finished);
+          if (inca_array[current[0]][current[1]] === inca_array[next[0]][next[1]] - 1) {
+            $('#' + current[0] + '-' + current[1]).addClass('visited');
+            $('#' + current[0] + '-' + current[1]).removeClass('current');
+            $('#' + next[0] + '-' + next[1]).addClass('current');
+            current[0] = next[0];
+            current[1] = next[1];
+            if (finished) {
+              clear_values();
+            } else {
+              where_goes_next();
+              window.setTimeout('check_if_is_inca_pyramid()', (800/length));
+            }
+          } else {
+          }
+        }
+
+        function create_empty_array() {
+          var i = 0;
+          var j = 0;
+          //empty current array
+          inca_array = [];  
+          //create basic array of 0's
+          for(i = 0;i < length;i++) {
+            inca_array.push(new Array());
+            for(j = 0;j < length;j++) {
+              inca_array[i].push(0);
+            }
+          }
+          clear_values();
+          inca_array[0][0] = Math.floor(Math.random()*50)+1;
+          create_inca_array();
+        }
+
+        function create_inca_array() {
+          inca_array[next[0]][next[1]] = inca_array[current[0]][current[1]] + 1
+          current[0] = next[0];
+          current[1] = next[1];
+          if (finished) {
+            clear_values();
+          } else {
+            where_goes_next();
+            create_inca_array();
+          }
+        }
+
+        function create_pyramid_structure() {
+          //get pyramid size
+          length = parseInt($('#pyramid-size').val());
+          //create intern array
+          create_empty_array();
+          //clean old table html
+          var table = $('#table-inca-pyramid tbody');
+          table.html("");
+          content = ""
+          var i = 0;
+          var j = 0;
+          //create html code to show the pyramid
+          for(i = 0;i < length;i++) {
+            content += '<tr>'
+            for(j = 0;j < length;j++) {
+              content += "<td id=\"" + i + "-" + j + "\">" + inca_array[i][j] + "</td>";
+            }
+            content += '</tr>'
+          }
+          table.html(content);
+          
+          check_if_is_inca_pyramid();
+        }
+    </script>
+</body>
+</html>
